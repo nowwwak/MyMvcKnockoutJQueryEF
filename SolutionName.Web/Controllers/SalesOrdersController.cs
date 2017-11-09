@@ -41,10 +41,9 @@ namespace SolutionName.Web.Controllers
                 return HttpNotFound();
             }
 
-            SalesOrderViewModel salesOrderViewModel = new SalesOrderViewModel();
-            salesOrderViewModel.CustomerName = salesOrder.CustomerName;
-            salesOrderViewModel.PONumber = salesOrder.PONumber;
-            salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
+            SalesOrderViewModel salesOrderViewModel =
+                Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+               
             salesOrderViewModel.MessageToClient = "I originated from the viewmodel.";
 
             return View(salesOrderViewModel);
@@ -88,12 +87,8 @@ namespace SolutionName.Web.Controllers
                 return HttpNotFound();
             }
 
-            SalesOrderViewModel salesOrderViewModel = new SalesOrderViewModel();
-            salesOrderViewModel.CustomerName = salesOrder.CustomerName;
-            salesOrderViewModel.PONumber = salesOrder.PONumber;
-            salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
+            SalesOrderViewModel salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
             salesOrderViewModel.MessageToClient = string.Format("The original value of customer name is {0}", salesOrderViewModel.CustomerName);
-            salesOrderViewModel.ObjectState = ObjectState.Unchanged;
 
             return View(salesOrderViewModel);
         }
@@ -126,7 +121,12 @@ namespace SolutionName.Web.Controllers
             {
                 return HttpNotFound();
             }
-            return View(salesOrder);
+
+            SalesOrderViewModel salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+            salesOrderViewModel.MessageToClient = string.Format("You are about to delete this sales order.");
+            salesOrderViewModel.ObjectState = ObjectState.Deleted;
+
+            return View(salesOrderViewModel);
         }
 
         // POST: SalesOrders/Delete/5
@@ -151,29 +151,39 @@ namespace SolutionName.Web.Controllers
 
         public JsonResult Save(SalesOrderViewModel salesOrderViewModel)
         {
-            SalesOrder salesOrder = new SalesOrder();
-            salesOrder.SalesOrderId = salesOrderViewModel.SalesOrderId;
-            salesOrder.CustomerName = salesOrderViewModel.CustomerName;
-            salesOrder.PONumber = salesOrderViewModel.PONumber;
-            salesOrder.ObjectState = salesOrderViewModel.ObjectState;
+            SalesOrder salesOrder = Helpers.CreateSalesOrderFromSalesOrderViewModel(salesOrderViewModel);           
 
             _salesContext.SalesOrders.Attach(salesOrder);
-            _salesContext.ChangeTracker.Entries<IObjectWithState>().Single().State = Helpers.ConvertState(salesOrder.ObjectState);
-            _salesContext.SaveChanges();
 
-            switch (salesOrderViewModel.ObjectState)
+            if (salesOrder.ObjectState == ObjectState.Deleted)
             {
-                case ObjectState.Added:
-                    salesOrderViewModel.MessageToClient = "New entry was added";
-                        break;
-                case ObjectState.Modified:
-                    salesOrderViewModel.MessageToClient = "Entry was modified";
-                    break;
-                     
+                foreach(SalesOrderItemViewModel salesOrderItemViewModel in salesOrderViewModel.SalesOrderItems)
+                {
+                    SalesOrderItem salesOrderItem = _salesContext.SalesOrderItems.Find(salesOrderItemViewModel.SalesOrderItemId);
+                    if (salesOrderItem != null)
+                        salesOrderItem.ObjectState = ObjectState.Deleted;
+                }
+            }
+            else
+            {
+                foreach (int salesOrderItemId in salesOrderViewModel.SalesOrderItemsToDelete)
+                {
+                    SalesOrderItem salesOrderItem = _salesContext.SalesOrderItems.Find(salesOrderItemId);
+                    if (salesOrderItem != null)
+                        salesOrderItem.ObjectState = ObjectState.Deleted;
+                }
             }
 
-            salesOrderViewModel.ObjectState = ObjectState.Unchanged;
-            salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
+            //_salesContext.ChangeTracker.Entries<IObjectWithState>().Single().State = SolutionName.DataLayer.Helpers.ConvertState(salesOrder.ObjectState);
+            _salesContext.ApplyStateChanges();
+            _salesContext.SaveChanges();
+
+            if (salesOrder.ObjectState == ObjectState.Deleted)
+                return Json(new { newLocation ="/SalesOrders/Index/"});
+
+            string messageToClient = Helpers.GetMessageToClient(salesOrderViewModel.ObjectState, salesOrder.CustomerName);
+            salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+            salesOrderViewModel.MessageToClient = messageToClient;
 
             return Json(new { salesOrderViewModel });
 

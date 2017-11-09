@@ -1,4 +1,30 @@
-﻿@model SolutionName.Model.SalesOrder
+﻿@model SolutionName.Web.ViewModel.SalesOrderViewModel
+@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "Delete Sales Order";
+}
+
+@{ string data = new JavaScriptSerializer().Serialize(Model);}
+
+@section scripts
+{
+    <script src="~/Scripts/knockout-3.1.0.js"></script>
+    <script src="~/Scripts/knockout.mapping-latest.js"></script>
+    <script src="~/Scripts/salesorderviewmodel.js"></script>
+    <script type="text/javascript">
+        var salesOrderViewModel = new SalesOrderViewModel(@Html.Raw(data));
+        ko.applyBindings(salesOrderViewModel);
+    </script>
+}
+
+@Html.Partial("_DisplaySalesOrder")
+
+<p>
+    <button class="btn btn-danger" data-bind="click: save">Delete</button>
+</p>
+
+
+@*@model SolutionName.Model.SalesOrder
 
 @{
     ViewBag.Title = "Delete";
@@ -37,4 +63,4 @@
             @Html.ActionLink("Back to List", "Index")
         </div>
     }
-</div>
+</div>*@

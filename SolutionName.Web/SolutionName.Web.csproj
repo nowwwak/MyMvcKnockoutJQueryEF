@@ -133,7 +133,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\SalesOrderItemViewModel.cs" />
     <Compile Include="ViewModel\SalesOrderViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +191,8 @@
     <Content Include="Views\SalesOrders\Details.cshtml" />
     <Content Include="Views\SalesOrders\Edit.cshtml" />
     <Content Include="Views\SalesOrders\Index.cshtml" />
+    <Content Include="Views\Shared\_DisplaySalesOrder.cshtml" />
+    <Content Include="Views\Shared\_EditSalesOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

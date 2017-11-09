@@ -17,9 +17,11 @@ namespace SolutionName.DataLayer
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-         modelBuilder.Configurations.Add(new SalesOrderConfiguration());
+            modelBuilder.Configurations.Add(new SalesOrderConfiguration());
+            modelBuilder.Configurations.Add(new SalesOrderItemConfiguration());
         }
 
         public DbSet<SalesOrder> SalesOrders { get; set; }
+        public DbSet<SalesOrderItem> SalesOrderItems { get; set; }
     }
 }
