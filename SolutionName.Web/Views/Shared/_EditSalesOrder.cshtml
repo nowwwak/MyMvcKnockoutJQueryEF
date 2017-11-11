@@ -1,7 +1,7 @@
 ﻿<h2>@ViewBag.Title</h2>
 @*<p>@Html.DisplayFor(model=>model.MessageToClient)</p>*@
 <p data-bind="text: MessageToClient"></p>
-<div>
+<form>
     <div class="form-group">
         <label class="control-label" for="CustomerName">Customer Name:</label>
         <input class="form-control" name="CustomerName" id="CustomerName" data-bind="value: CustomerName, event: {change: flagSalesOrderAsEdited}" />
@@ -10,39 +10,41 @@
         <label class="control-label" for="PONumber">P.O. Number:</label>
         <input class="form-control" name="PONumber" id="PONumber" data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
     </div>
-</div>
 
-<table class="table table-striped">
-    <tr>
-        <th>Product Code</th>
-        <th class="text-right">Quantity</th>
-        <th class="text-right">Unit Price</th>
-        <th class="text-right">Extended</th>
-        <th><button data-bind="click: addSalesOrderItem" class="btn btn-info btn-xs">Add</button></th>
-    </tr>
-    <tbody data-bind="foreach: SalesOrderItems">
+
+    <table class="table table-striped">
         <tr>
-            <td class="form-group"><input class="form-control input-sm" data-bind="value: ProductCode, event: {change: flagSalesOrderItemAsEdited}, hasfocus: true"/></td>
-            <td class="form-group"><input class="form-control input-sm text-right" data-bind="value: Quantity" /></td>
-            <td class="form-group"><input class="form-control input-sm text-right" data-bind="value: UnitPrice" /></td>
-            <td class="form-group"><span class="form-control text-right" data-bind="text: ExtendedPrice"></span>
-            <td class="form-group"><button class="btn btn-danger btn-xs" data-bind="click: $parent.deleteSalesOrderItem">Delete</button></td>
+            <th>Product Code</th>
+            <th class="text-right">Quantity</th>
+            <th class="text-right">Unit Price</th>
+            <th class="text-right">Extended</th>
+            <th><button data-bind="click: addSalesOrderItem" class="btn btn-info btn-xs">Add</button></th>
+        </tr>
+        <tbody data-bind="foreach: SalesOrderItems">
+            <tr>
+                <td class="form-group"><input name="ProductCode" class="form-control input-sm" data-bind="attr: {'id': 'ProductCode_'+$index()},value: ProductCode, event: {change: flagSalesOrderItemAsEdited}, hasfocus: true" /></td>
+                <td class="form-group"><input name="Quantity" class="form-control input-sm text-right" data-bind="attr: {'id': 'Quantity_'+$index()}, value: Quantity" /></td>
+                <td class="form-group"><input name="UnitPrice" class="form-control input-sm text-right" data-bind="attr: {'id': 'UnitPrice_'+$index()}, value: UnitPrice" /></td>
+                <td class="form-group"><span class="form-control text-right" data-bind="text: ExtendedPrice"></span>
+                <td class="form-group"><button class="btn btn-danger btn-xs" data-bind="click: $parent.deleteSalesOrderItem">Delete</button></td>
 
-        </tr>       
-    </tbody>
-    <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td class="form-group"><span class="form-control text-right">Total</span></td>
-        <td class="form-group"><span class="form-control text-right" data-bind="text: Total"></span></td>
-        <td>&nbsp;</td>
-    </tr>
-</table>
+            </tr>
+        </tbody>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td class="form-group"><span class="form-control text-right">Total</span></td>
+            <td class="form-group"><span class="form-control text-right" data-bind="text: Total"></span></td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
 
 
-<p>
-    <button data-bind="click: save" class="btn btn-primary">Save</button>
-</p>
-<p>
-    <a href="/" class="btn btn-default btn-sn">Back to list</a>
-</p>
+    <p>
+        @*<button data-bind="click: save" class="btn btn-primary">Save</button>*@
+        <button type="submit" class="btn btn-primary">Save</button>
+    </p>
+    <p>
+        <a href="/" class="btn btn-default btn-sn">Back to list</a>
+    </p>
+</form>

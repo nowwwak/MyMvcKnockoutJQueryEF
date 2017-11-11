@@ -18,6 +18,15 @@ var salesOrderItemMapping = {
     }
 }
 
+var dataConverter = function (key, value) {
+    if (key === 'RowVersion' && Array.isArray(value)) {
+        var str = String.fromCharCode.apply(null, value);
+        return btoa(str);
+    }
+
+    return value;
+}
+
 SalesOrderItemViewModel = function (data) {
     var self = this;
     ko.mapping.fromJS(data, {}, self);
@@ -43,7 +52,7 @@ SalesOrderViewModel = function (data) {
         $.ajax({
             url: "/SalesOrders/Save",
             type: "POST",
-            data: ko.toJSON(self),
+            data: ko.toJSON(self, dataConverter),
             contentType: "application/json",
             success: function (data) {
                 if (data.salesOrderViewModel != null)
@@ -79,3 +88,51 @@ SalesOrderViewModel = function (data) {
             self.SalesOrderItemsToDelete.push(salesOrderItem.SalesOrderItemId());
     };
 }
+
+
+$("form").validate({
+    submitHandler: function () {
+        salesOrderViewModel.save();
+    },
+    rules: {
+        CustomerName: {
+            required: true,
+            maxlength: 30
+        },
+        PONumber: {
+            maxlength: 10
+        },
+        ProductCode: {
+            required: true,
+            maxlength: 15,
+            alphaonly: true
+        },
+        Quantity: {
+            required: true,
+            digits: true,
+            range: [1, 1000000]
+        },
+        UnitPrice: {
+            required: true,
+            number: true,
+            range: [0, 100000]
+        }
+    },
+    messages: {
+        CustomerName: {
+            required: "You cannot create a sales order unless you supply the customer's name.",
+            maxlength: "Customer names must be 30 characters or shorter."
+        },
+        ProductCode: {
+            alphaonly: "Product codes consist of letters only."
+        }
+    }
+});
+
+
+
+$.validator.addMethod("alphaonly",
+    function (value) {
+        return /^[A-Za-z]+$/.test(value);
+    }
+);

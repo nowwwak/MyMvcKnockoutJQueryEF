@@ -19,6 +19,8 @@ namespace SolutionName.Model
         public ObjectState ObjectState { get; set; }
 
         public virtual List<SalesOrderItem> SalesOrderItems { get; set; }
+
+        public byte[] RowVersion { get; set; }
         
     }
 }

@@ -16,6 +16,7 @@ namespace SolutionName.DataLayer
             Property(soi => soi.Quantity).IsRequired();
             Property(soi => soi.UnitPrice).IsRequired();
             Ignore(soi => soi.ObjectState);
+            Property(soi => soi.RowVersion);
         }
     }
 }

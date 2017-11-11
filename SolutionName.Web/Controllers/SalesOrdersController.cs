@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using SolutionName.DataLayer;
 using SolutionName.Model;
 using SolutionName.Web.ViewModel;
+using System.Data.Entity.Infrastructure;
 
 namespace SolutionName.Web.Controllers
 {
@@ -173,15 +174,28 @@ namespace SolutionName.Web.Controllers
                         salesOrderItem.ObjectState = ObjectState.Deleted;
                 }
             }
-
+            string messageToClient = string.Empty;
             //_salesContext.ChangeTracker.Entries<IObjectWithState>().Single().State = SolutionName.DataLayer.Helpers.ConvertState(salesOrder.ObjectState);
             _salesContext.ApplyStateChanges();
-            _salesContext.SaveChanges();
+            try
+            {
+                _salesContext.SaveChanges();
+            }
+            catch(DbUpdateConcurrencyException)
+            {
+                messageToClient =
+                    "Someone else has modified this sales order since you retired it. Your cahnegs have not been applied. What you see now are the current values in the database.";
+            }
 
             if (salesOrder.ObjectState == ObjectState.Deleted)
                 return Json(new { newLocation ="/SalesOrders/Index/"});
+            if(messageToClient.Trim().Length==0)
+                messageToClient = Helpers.GetMessageToClient(salesOrderViewModel.ObjectState, salesOrder.CustomerName);
+            salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
+            _salesContext.Dispose();
+            _salesContext = new SalesContext();
+            salesOrder = _salesContext.SalesOrders.Find(salesOrderViewModel.SalesOrderId);
 
-            string messageToClient = Helpers.GetMessageToClient(salesOrderViewModel.ObjectState, salesOrder.CustomerName);
             salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
             salesOrderViewModel.MessageToClient = messageToClient;
 

@@ -15,6 +15,7 @@ namespace SolutionName.Web
             salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
             salesOrderViewModel.CustomerName = salesOrder.CustomerName;
             salesOrderViewModel.PONumber = salesOrder.PONumber;
+            salesOrderViewModel.RowVersion = salesOrder.RowVersion;
             foreach (SalesOrderItem salesOrderItem in salesOrder.SalesOrderItems)
             {
                 SalesOrderItemViewModel salesOrderItemViewModel = new SalesOrderItemViewModel();
@@ -22,10 +23,12 @@ namespace SolutionName.Web
                 salesOrderItemViewModel.ProductCode = salesOrderItem.ProductCode;
                 salesOrderItemViewModel.Quantity = salesOrderItem.Quantity;
                 salesOrderItemViewModel.UnitPrice = salesOrderItem.UnitPrice;
+                salesOrderItemViewModel.RowVersion = salesOrderItem.RowVersion;
 
                 salesOrderItemViewModel.ObjectState = ObjectState.Unchanged;
 
                 salesOrderItemViewModel.SalesOrderId = salesOrder.SalesOrderId;
+
 
                 salesOrderViewModel.SalesOrderItems.Add(salesOrderItemViewModel);
             }
@@ -38,9 +41,9 @@ namespace SolutionName.Web
             SalesOrder salesOrder = new SalesOrder();
             salesOrder.SalesOrderId = salesOrderViewModel.SalesOrderId;
             salesOrder.CustomerName = salesOrderViewModel.CustomerName;
-            salesOrder.PONumber = salesOrderViewModel.PONumber;
-
+            salesOrder.PONumber = salesOrderViewModel.PONumber;            
             salesOrder.ObjectState = salesOrderViewModel.ObjectState;
+            salesOrder.RowVersion = salesOrderViewModel.RowVersion;
             int temporarySalesOrderItemId = -1;
             foreach (SalesOrderItemViewModel salesOrderItemViewModel in salesOrderViewModel.SalesOrderItems)
             {
@@ -49,6 +52,7 @@ namespace SolutionName.Web
                 salesOrderItem.Quantity = salesOrderItemViewModel.Quantity;
                 salesOrderItem.UnitPrice = salesOrderItemViewModel.UnitPrice;
                 salesOrderItem.ObjectState = salesOrderItemViewModel.ObjectState;
+                salesOrderItem.RowVersion = salesOrderItemViewModel.RowVersion;
 
                 if (salesOrderItemViewModel.ObjectState != ObjectState.Added)
                     salesOrderItem.SalesOrderItemId = salesOrderItemViewModel.SalesOrderItemId;
