@@ -13,6 +13,7 @@ namespace SolutionName.Web.ViewModel
         {
             SalesOrderItems = new List<SalesOrderItemViewModel>();
             SalesOrderItemsToDelete = new List<int>();
+            Cities = new List<CityViewModel>();
         }
         public int SalesOrderId { get; set; }
         [Required (ErrorMessage ="Server: You cannot create a sales order unless you supply the custoemr's name")]
@@ -30,5 +31,11 @@ namespace SolutionName.Web.ViewModel
         public List<int> SalesOrderItemsToDelete { get; set; }
 
         public byte[] RowVersion { get; set; }
+
+        public int CityId { get; set; }
+        public string CityName { get; set; }
+
+        public List<CityViewModel> Cities { get; set; }
+        public List<ServiceType> ServiceTypes { get; internal set; }
     }
 }

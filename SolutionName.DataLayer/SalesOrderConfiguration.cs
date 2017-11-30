@@ -16,6 +16,7 @@ namespace SolutionName.DataLayer
             Property(so => so.PONumber).HasMaxLength(10).IsOptional();
             Ignore(so => so.ObjectState);
             Property(so => so.RowVersion).IsRowVersion();
+            Property(so => so.CityId).IsRequired();
         }
     }
 }

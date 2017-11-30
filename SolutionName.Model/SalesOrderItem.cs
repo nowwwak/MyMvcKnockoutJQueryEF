@@ -17,7 +17,10 @@ namespace SolutionName.Model
 
         public int SalesOrderId { get; set; }
         public SalesOrder SalesOrder { get; set; }
-        public ObjectState ObjectState { get; set; }        
+        public ObjectState ObjectState { get; set; }
         public byte[] RowVersion { get; set; }
+
+        public bool ExtendWarranty { get; set; }
+        public byte? ServiceTypeId {get;set;}
     }
 }

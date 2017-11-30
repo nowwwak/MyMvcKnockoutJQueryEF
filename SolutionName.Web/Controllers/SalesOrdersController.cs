@@ -43,7 +43,7 @@ namespace SolutionName.Web.Controllers
             }
 
             SalesOrderViewModel salesOrderViewModel =
-                Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+                Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder, null);
                
             salesOrderViewModel.MessageToClient = "I originated from the viewmodel.";
 
@@ -53,8 +53,8 @@ namespace SolutionName.Web.Controllers
         // GET: SalesOrders/Create
         public ActionResult Create()
         {
-            SalesOrderViewModel salesOrderViewModel = new SalesOrderViewModel();
-            salesOrderViewModel.ObjectState = ObjectState.Added;
+            SalesOrderViewModel salesOrderViewModel = Helpers.CreateEmptySalesOrderViewModel(_salesContext.Cities.ToList());
+
             return View(salesOrderViewModel);
         }
 
@@ -88,7 +88,7 @@ namespace SolutionName.Web.Controllers
                 return HttpNotFound();
             }
 
-            SalesOrderViewModel salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+            SalesOrderViewModel salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder, _salesContext.Cities.ToList());
             salesOrderViewModel.MessageToClient = string.Format("The original value of customer name is {0}", salesOrderViewModel.CustomerName);
 
             return View(salesOrderViewModel);
@@ -123,7 +123,7 @@ namespace SolutionName.Web.Controllers
                 return HttpNotFound();
             }
 
-            SalesOrderViewModel salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+            SalesOrderViewModel salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder, null);
             salesOrderViewModel.MessageToClient = string.Format("You are about to delete this sales order.");
             salesOrderViewModel.ObjectState = ObjectState.Deleted;
 
@@ -196,7 +196,7 @@ namespace SolutionName.Web.Controllers
             _salesContext = new SalesContext();
             salesOrder = _salesContext.SalesOrders.Find(salesOrderViewModel.SalesOrderId);
 
-            salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+            salesOrderViewModel = Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder, _salesContext.Cities.ToList());
             salesOrderViewModel.MessageToClient = messageToClient;
 
             return Json(new { salesOrderViewModel });

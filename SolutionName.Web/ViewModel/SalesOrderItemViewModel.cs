@@ -24,5 +24,10 @@ namespace SolutionName.Web.ViewModel
         public int SalesOrderId { get; set; }
         public ObjectState ObjectState { get; set; }
         public byte[] RowVersion { get; set; }
+
+        public bool ExtendWarranty { get; set; }
+        public byte? ServiceTypeId { get; set; }
+        public string ServiceTypeName { get; internal set; }
+        public List<ServiceType> ServiceTypes { get; internal set; }
     }
 }

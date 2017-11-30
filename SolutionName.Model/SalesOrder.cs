@@ -21,6 +21,10 @@ namespace SolutionName.Model
         public virtual List<SalesOrderItem> SalesOrderItems { get; set; }
 
         public byte[] RowVersion { get; set; }
+
+        public virtual City City { get; set; }
+
+        public int CityId { get; set; }
         
     }
 }

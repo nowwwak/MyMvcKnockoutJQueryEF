@@ -9,13 +9,42 @@ namespace SolutionName.Web
 {
     public static class Helpers
     {
-        public static SalesOrderViewModel CreateSalesOrderViewModelFromSalesOrder(SalesOrder salesOrder)
+        private static List<ServiceType> GetServiceTypes()
         {
+            List<ServiceType> serviceTypes = new List<ServiceType>();
+
+            foreach(var st in Enum.GetValues(typeof(ServiceTypeEnum)))
+            {
+                serviceTypes.Add(new ServiceType() { ServiceTypeId =(ServiceTypeEnum) st });
+            }
+
+            return serviceTypes;
+        }
+
+        public static SalesOrderViewModel CreateEmptySalesOrderViewModel(List<City> cities)
+        {
+            List<ServiceType> serviceTypes = GetServiceTypes();
+            SalesOrderViewModel salesOrderViewModel = new SalesOrderViewModel();
+            salesOrderViewModel.ObjectState = ObjectState.Added;
+            if (cities != null)
+                cities.ForEach(c => salesOrderViewModel.Cities.Add(new CityViewModel() { CityId = c.CityId, Name = c.Name }));
+
+            salesOrderViewModel.ServiceTypes = GetServiceTypes();
+
+            return salesOrderViewModel;
+        }
+
+        public static SalesOrderViewModel CreateSalesOrderViewModelFromSalesOrder(SalesOrder salesOrder, List<City> cities)
+        {
+            List<ServiceType> serviceTypes = GetServiceTypes();
             SalesOrderViewModel salesOrderViewModel = new SalesOrderViewModel();
             salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
             salesOrderViewModel.CustomerName = salesOrder.CustomerName;
             salesOrderViewModel.PONumber = salesOrder.PONumber;
             salesOrderViewModel.RowVersion = salesOrder.RowVersion;
+            salesOrderViewModel.CityId = salesOrder.CityId;
+            salesOrderViewModel.CityName = salesOrder.City.Name;
+            salesOrderViewModel.ServiceTypes = GetServiceTypes();
             foreach (SalesOrderItem salesOrderItem in salesOrder.SalesOrderItems)
             {
                 SalesOrderItemViewModel salesOrderItemViewModel = new SalesOrderItemViewModel();
@@ -24,6 +53,10 @@ namespace SolutionName.Web
                 salesOrderItemViewModel.Quantity = salesOrderItem.Quantity;
                 salesOrderItemViewModel.UnitPrice = salesOrderItem.UnitPrice;
                 salesOrderItemViewModel.RowVersion = salesOrderItem.RowVersion;
+                salesOrderItemViewModel.ExtendWarranty = salesOrderItem.ExtendWarranty;
+                salesOrderItemViewModel.ServiceTypeId = salesOrderItem.ServiceTypeId;
+                salesOrderItemViewModel.ServiceTypeName = Enum.GetName(typeof(ServiceTypeEnum), salesOrderItem.ServiceTypeId);
+                salesOrderItemViewModel.ServiceTypes = serviceTypes;
 
                 salesOrderItemViewModel.ObjectState = ObjectState.Unchanged;
 
@@ -32,6 +65,9 @@ namespace SolutionName.Web
 
                 salesOrderViewModel.SalesOrderItems.Add(salesOrderItemViewModel);
             }
+
+            if(cities!=null)
+                cities.ForEach(c => salesOrderViewModel.Cities.Add(new CityViewModel() { CityId=c.CityId, Name = c.Name }));
 
             return salesOrderViewModel;
         }
@@ -44,6 +80,7 @@ namespace SolutionName.Web
             salesOrder.PONumber = salesOrderViewModel.PONumber;            
             salesOrder.ObjectState = salesOrderViewModel.ObjectState;
             salesOrder.RowVersion = salesOrderViewModel.RowVersion;
+            salesOrder.CityId = salesOrderViewModel.CityId;
             int temporarySalesOrderItemId = -1;
             foreach (SalesOrderItemViewModel salesOrderItemViewModel in salesOrderViewModel.SalesOrderItems)
             {
@@ -53,6 +90,8 @@ namespace SolutionName.Web
                 salesOrderItem.UnitPrice = salesOrderItemViewModel.UnitPrice;
                 salesOrderItem.ObjectState = salesOrderItemViewModel.ObjectState;
                 salesOrderItem.RowVersion = salesOrderItemViewModel.RowVersion;
+                salesOrderItem.ExtendWarranty = salesOrderItemViewModel.ExtendWarranty;
+                salesOrderItem.ServiceTypeId = salesOrderItemViewModel.ServiceTypeId;
 
                 if (salesOrderItemViewModel.ObjectState != ObjectState.Added)
                     salesOrderItem.SalesOrderItemId = salesOrderItemViewModel.SalesOrderItemId;

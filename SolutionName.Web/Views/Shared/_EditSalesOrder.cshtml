@@ -1,4 +1,5 @@
-﻿<h2>@ViewBag.Title</h2>
+﻿@model SolutionName.Web.ViewModel.SalesOrderViewModel
+<h2>@ViewBag.Title</h2>
 @*<p>@Html.DisplayFor(model=>model.MessageToClient)</p>*@
 <p data-bind="text: MessageToClient"></p>
 <form>
@@ -10,7 +11,15 @@
         <label class="control-label" for="PONumber">P.O. Number:</label>
         <input class="form-control" name="PONumber" id="PONumber" data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
     </div>
-
+    <div>
+        <label class="control-label" for="City">City:</label>
+        <select class="form-control" name="City" id="City" data-bind="value: CityId, event: {change: flagSalesOrderAsEdited}">
+            @foreach(var itm in Model.Cities)
+            {
+                <option value="@itm.CityId">@itm.Name</option>
+            }
+        </select>
+    </div>
 
     <table class="table table-striped">
         <tr>
@@ -18,14 +27,29 @@
             <th class="text-right">Quantity</th>
             <th class="text-right">Unit Price</th>
             <th class="text-right">Extended</th>
+            <th class="text-right">Service type</th>
+            <th class="text-right">Extend warranty</th>           
             <th><button data-bind="click: addSalesOrderItem" class="btn btn-info btn-xs">Add</button></th>
         </tr>
         <tbody data-bind="foreach: SalesOrderItems">
             <tr>
                 <td class="form-group"><input name="ProductCode" class="form-control input-sm" data-bind="attr: {'id': 'ProductCode_'+$index()},value: ProductCode, event: {change: flagSalesOrderItemAsEdited}, hasfocus: true" /></td>
-                <td class="form-group"><input name="Quantity" class="form-control input-sm text-right" data-bind="attr: {'id': 'Quantity_'+$index()}, value: Quantity" /></td>
-                <td class="form-group"><input name="UnitPrice" class="form-control input-sm text-right" data-bind="attr: {'id': 'UnitPrice_'+$index()}, value: UnitPrice" /></td>
-                <td class="form-group"><span class="form-control text-right" data-bind="text: ExtendedPrice"></span>
+                <td class="form-group"><input name="Quantity" class="form-control input-sm text-right" data-bind="attr: {'id': 'Quantity_'+$index()}, value: Quantity, event: {change: flagSalesOrderItemAsEdited}" /></td>
+                <td class="form-group"><input name="UnitPrice" class="form-control input-sm text-right" data-bind="attr: {'id': 'UnitPrice_'+$index()}, value: UnitPrice, event: {change: flagSalesOrderItemAsEdited}" /></td>
+                <td class="form-group"><span class="form-control text-right" data-bind="text: ExtendedPrice"></span></td>
+                <td class="form-group">
+                    <select cname="ServiceTypeId" class="form-control input-sm text-right" 
+                            @*data-bind="attr: {'id': 'ServiceTypeId_'+$index()}, value: ServiceTypeId, event: {change: flagSalesOrderItemAsEdited}"*@
+                            data-bind=
+"attr: {'id': 'ServiceTypeId_'+$index()}, value: ServiceTypeId, options: $parent.ServiceTypes, optionsText: 'ServiceTypeName', optionsValue: 'ServiceTypeId', event: {change: flagSalesOrderItemAsEdited}"
+                       >
+                        @*@foreach (var itm in Model.ServiceTypes)
+                        {
+                            <option value="@itm.ServiceTypeId">@itm.ServiceTypeName</option>
+                        }*@
+                    </select>
+                </td>
+                <td class="form-group"><input name="ExtendWarranty" type="checkbox" class="checkbox " data-bind="attr: {'id': 'ExtendWarranty_'+$index()}, checked: ExtendWarranty, event: {change: flagSalesOrderItemAsEdited}" /></td>
                 <td class="form-group"><button class="btn btn-danger btn-xs" data-bind="click: $parent.deleteSalesOrderItem">Delete</button></td>
 
             </tr>
@@ -35,6 +59,8 @@
             <td>&nbsp;</td>
             <td class="form-group"><span class="form-control text-right">Total</span></td>
             <td class="form-group"><span class="form-control text-right" data-bind="text: Total"></span></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
             <td>&nbsp;</td>
         </tr>
     </table>

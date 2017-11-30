@@ -70,7 +70,7 @@ SalesOrderViewModel = function (data) {
     };
 
     self.addSalesOrderItem = function () {
-        var salesOrderItem = new SalesOrderItemViewModel({ SalesOrderItemId: 0, ProductCode: "", Quantity: 1, UnitPrice: 0, ObjectState: ObjectState.Added });
+        var salesOrderItem = new SalesOrderItemViewModel({ SalesOrderItemId: 0, ProductCode: "", Quantity: 1, UnitPrice: 0, ObjectState: ObjectState.Added, ServiceTypes: self.ServiceTypes, ServiceTypeId: 1, ExtendWarranty: false});
         self.SalesOrderItems.push(salesOrderItem);
     };
 
@@ -88,8 +88,6 @@ SalesOrderViewModel = function (data) {
             self.SalesOrderItemsToDelete.push(salesOrderItem.SalesOrderItemId());
     };
 }
-
-
 $("form").validate({
     submitHandler: function () {
         salesOrderViewModel.save();
@@ -101,6 +99,9 @@ $("form").validate({
         },
         PONumber: {
             maxlength: 10
+        },
+        CityId:{
+            required: true
         },
         ProductCode: {
             required: true,
